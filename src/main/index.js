@@ -74,7 +74,7 @@ ipcMain.on('openLogs', (event, w, h) => {
 ipcMain.on('controlDevice', (event, device) => {
   log.info('Control Device: ', device)
 
-  var pathToFfmpeg = require('ffmpeg-static')
+  var pathToFfmpeg = require('ffmpeg-static').replace('app.asar', 'app.asar.unpacked')
   var cmd = pathToFfmpeg + ' -hide_banner -f dshow -show_video_device_dialog true -i video="' + device + '"'
 
   log.info('Executing ffmpeg: ' + cmd)

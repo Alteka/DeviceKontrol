@@ -85,6 +85,9 @@ ipcMain.on('controlDevice', (event, device) => {
       if (error.message.includes('requested filter does not have a property page')) {
         controlWindow.webContents.send('message', 'Device does not have any editable properties')
         dialog.showErrorBox('Oops', device + ' does not have any editable properties')
+      } else if (error.message.includes('Failure showing property pages for')) {
+        controlWindow.webContents.send('message', 'Can not access properties for device')
+        dialog.showErrorBox('Oops', device + ' does not have any editable properties')
       }
       return;
     }

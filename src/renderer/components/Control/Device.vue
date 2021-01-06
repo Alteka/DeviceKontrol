@@ -12,7 +12,7 @@ const { ipcRenderer } = require('electron')
   export default {
     props: {
       device: InputDeviceInfo
-    },,
+    },
     methods: {
       controlDevice: function() { 
         ipcRenderer.send('controlDevice', this.device.label)

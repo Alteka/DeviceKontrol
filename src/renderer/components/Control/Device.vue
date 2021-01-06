@@ -1,8 +1,8 @@
 <template>
-  <el-row style="text-align: center"> 
+  <el-row style="text-align: center; margin-bottom: 10px;"> 
     <el-button round @click="controlDevice()">
       <i class="fas fa-video" v-if="device.kind == 'videoinput'"> </i>
-    {{ device.label }}
+    {{ label }}
     </el-button>
   </el-row>
 </template>
@@ -13,9 +13,14 @@ const { ipcRenderer } = require('electron')
     props: {
       device: InputDeviceInfo
     },
+    computed: {
+      label: function() {
+        return this.device.label.replace(/\s\([^)]+\)$/, '')
+      }
+    },
     methods: {
       controlDevice: function() { 
-        ipcRenderer.send('controlDevice', this.device.label)
+        ipcRenderer.send('controlDevice', this.label)
       }
     }
   }

@@ -58,11 +58,6 @@ app.on('activate', () => {
 //========================//
 //       IPC Handlers     //
 //========================//
-ipcMain.on('getConfigControl', (event, arg) => {
-  controlWindow.webContents.send('darkMode', nativeTheme.shouldUseDarkColors)
-  // send list of devices here?!?!!?!
-})
-
 ipcMain.on('controlResize', (event, w, h) => {
   controlWindow.setContentSize(460, h)
 })

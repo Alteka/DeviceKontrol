@@ -1,8 +1,8 @@
 <template>
-  <div id="wrapper" style="position: relative; padding-bottom: 15px" :class="{ darkMode : darkMode }">
+  <div id="wrapper" style="position: relative; padding-bottom: 5px">
 
     <el-row style="padding-top: 10px;">
-      <el-col :span="18" style="font-size: 36px; color: #bbb; padding-left: 10px;">
+      <el-col :span="18" style="font-size: 36px; padding-left: 10px;">
         <img src="~@/assets/bug.png" height="26" @click="openLogs()" />
         Device Kontrol
       </el-col>
@@ -23,25 +23,15 @@
 const { ipcRenderer } = require('electron')
 import Device from './Control/Device.vue'
 import { Notification } from 'element-ui'
-var compareVersions = require('compare-versions')
 
   export default {
     name: 'control',
     components: { Device },
     data: function () {
-    return {
-      devices: [],
-      darkMode: false
-    }
-  },
-    created: function() {
-      let vm = this
-      ipcRenderer.on('darkMode', function(event, val) {
-        vm.darkMode = val
-      })
-      ipcRenderer.send('getConfigControl')
+      return {
+        devices: []
+      }
     },
-
     mounted: function(){
       this.$nextTick(function () {
         let h = document.getElementById('wrapper').clientHeight
@@ -79,68 +69,5 @@ var compareVersions = require('compare-versions')
 .green {
   color: #6ab42f;
   margin-right: 5px;
-}
-.darkMode {
-  background: #222;
-}
-.darkMode .el-divider {
-  background: #555;
-}
-.darkMode .el-divider__text {
-  background: #222;
-  color: #aaa;
-}
-.darkMode label {
-  color: #bbb;
-}
-.darkMode .el-tabs--border-card {
-  background: #333;
-  border: 1px solid #111;
-}
-.darkMode .el-tabs--border-card>.el-tabs__header {
-  background: #292929;
-  border-bottom: 1px solid #111;
-}
-.darkMode .el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active {
-  background: #333;
-  border-right: 1px solid #111;
-  border-left: 1px solid #111;
-}
-.darkMode .el-color-picker__trigger {
-  border: 1px solid #666;
-}
-.darkMode .el-radio-button__inner {
-  background: #3d3d3d;
-  color: #ddd;
-  border: 1px solid #666;
-}
-.darkMode .el-radio-button:first-child .el-radio-button__inner {
-  border-left: 1px solid #666;
-}
-.darkMode .el-button {
-  background: #3d3d3d;
-  color: #ddd;
-  border: 1px solid #666;
-}
-.darkMode .el-input__inner {
-  background: #3d3d3d;
-  color: #ddd;
-  border: 1px solid #666;
-}
-.darkMode .el-input-number__increase {
-  background: #292929;
-  color: #ddd;
-}
-.darkMode .el-input-number__decrease {
-  background: #292929;
-  color: #ddd;
-}
-.darkMode .el-drawer {
-  background: #292929;
-  border-top: 3px solid #6ab42f;
-  color: #ddd;
-}
-.darkMode .el-checkbox-button__inner {
-  background: none;
 }
 </style>

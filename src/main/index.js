@@ -1,14 +1,9 @@
 import { app, BrowserWindow, ipcMain, webContents, nativeTheme, dialog, screen, TouchBar, Menu, MenuItem, shell } from 'electron'
 import { create } from 'domain'
-const fs = require('fs')
-const say = require('say')
-const Store = require('electron-store')
 const menu = require('./menu.js').menu
 const log = require('electron-log')
 const {exec} = require('child_process')
 
-
-const store = new Store()
 
 if (process.env.NODE_ENV !== 'development') {
   global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
@@ -85,7 +80,7 @@ ipcMain.on('controlDevice', (event, device) => {
   log.info('Control Device: ', device)
 
   var pathToFfmpeg = require('ffmpeg-static')
-  var cmd = pathToFfmpeg + ' -f dshow -show_video_device_dialog true -i video="' + device + '"'
+  var cmd = pathToFfmpeg + ' -hide_banner -f dshow -show_video_device_dialog true -i video="' + device + '"'
 
   log.info('Executing ffmpeg: ' + cmd)
 

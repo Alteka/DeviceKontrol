@@ -5,7 +5,7 @@ const say = require('say')
 const Store = require('electron-store')
 const menu = require('./menu.js').menu
 const log = require('electron-log')
-
+const {exec} = require('child_process')
 
 
 const store = new Store()
@@ -77,7 +77,25 @@ ipcMain.on('openLogs', (event, w, h) => {
   shell.showItemInFolder(path)
 })
 
-ipcMain.on('openUrl', (event, arg) => {
-  shell.openExternal(arg)
-  log.info('open url', arg)
+
+//========================//
+//     Device Control     //
+//========================//
+ipcMain.on('controlDevice', (event, device) => {
+  log.info('Control Device: ', device)
+
+  var pathToFfmpeg = require('ffmpeg-static')
+  var cmd = pathToFfmpeg + ' -f dshow -show_video_device_dialog true -i video="' + device + '"'
+
+  log.info('Executing ffmpeg: ' + cmd)
+
+  exec(cmd, (error, stdout, stderr) => {
+    if (error) {
+      dialog.showErrorBox('Unexpected Error', error + '\r\n\r\n' + JSON.stringify(error))
+      log.error(error)
+      return;
+    }
+    log.verbose(`stdout: ${stdout}`)
+  });
+  
 })

@@ -49,6 +49,7 @@
     "electron-log": "^4.3.0",
     "electron-store": "^5.2.0",
     "element-ui": "^2.14.1",
+    "ffmpeg-static": "^4.2.7",
     "image-size": "^0.9.3",
     "say": "^0.16.0",
     "vue": "^2.6.12",

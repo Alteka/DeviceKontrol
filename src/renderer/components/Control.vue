@@ -4,12 +4,15 @@
    
 
 
-<el-row>
-  <el-col :span="16" style="font-size: 200%; color: #bbb; padding-left: 10px;">
+<el-row style="padding-top: 10px;">
+  <el-col :span="6" style="font-size: 100%; color: #bbb; padding-left: 10px;">
+    <img src="~@/assets/bug.png" height="32" @click="openLogs()" />
+  </el-col>
+  <el-col :span="12" style="font-size: 200%; color: #bbb; text-align: center;">
     Device Kontrol
   </el-col>
-  <el-col :span="8" style="text-align: right;">
-    <el-button round size="mini" style="margin-top: 10px; margin-right: 10px;" @click="updateDevices()"><i class="fas fa-sync-alt"></i> Refresh</el-button>
+  <el-col :span="6" style="text-align: right;">
+    <el-button round size="mini" style="margin-right: 10px;" @click="updateDevices()"><i class="fas fa-sync-alt"></i> Refresh</el-button>
   </el-col>
 </el-row>
      
@@ -75,6 +78,9 @@ var compareVersions = require('compare-versions')
     methods: {
       handleResize: function({ width, height }) {
         ipcRenderer.send('controlResize', width, height)
+      },
+      openLogs: function() {
+        ipcRenderer.send('openLogs')
       },
       updateDevices: function() {
 

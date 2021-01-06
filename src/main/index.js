@@ -81,8 +81,11 @@ ipcMain.on('controlDevice', (event, device) => {
 
   exec(cmd, (error, stdout, stderr) => {
     if (error) {
-      dialog.showErrorBox('Unexpected Error', error + '\r\n\r\n' + JSON.stringify(error))
       log.error(error)
+      if (error.message.includes('requested filter does not have a property page')) {
+        controlWindow.webContents.send('message', 'Device does not have any editable properties')
+        dialog.showErrorBox('Oops', device + ' does not have any editable properties')
+      }
       return;
     }
     log.verbose(`stdout: ${stdout}`)

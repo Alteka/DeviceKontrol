@@ -2,14 +2,12 @@
   <div id="wrapper" style="position: relative; padding-bottom: 15px" :class="{ darkMode : darkMode }">
 
     <el-row style="padding-top: 10px;">
-      <el-col :span="6" style="font-size: 100%; color: #bbb; padding-left: 10px;">
-        <img src="~@/assets/bug.png" height="32" @click="openLogs()" />
-      </el-col>
-      <el-col :span="12" style="font-size: 200%; color: #bbb; text-align: center;">
+      <el-col :span="18" style="font-size: 36px; color: #bbb; padding-left: 10px;">
+        <img src="~@/assets/bug.png" height="26" @click="openLogs()" />
         Device Kontrol
       </el-col>
       <el-col :span="6" style="text-align: right;">
-        <el-button round size="mini" style="margin-right: 10px;" @click="updateDevices()"><i class="fas fa-sync-alt"></i> Refresh</el-button>
+        <el-button round size="small" style="margin-right: 10px;" @click="updateDevices()"><i class="fas fa-sync-alt"></i></el-button>
       </el-col>
     </el-row>
       

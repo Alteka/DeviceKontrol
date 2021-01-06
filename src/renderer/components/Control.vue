@@ -1,39 +1,30 @@
 <template>
   <div id="wrapper" style="position: relative; padding-bottom: 15px" :class="{ darkMode : darkMode }">
 
-   
+    <el-row style="padding-top: 10px;">
+      <el-col :span="6" style="font-size: 100%; color: #bbb; padding-left: 10px;">
+        <img src="~@/assets/bug.png" height="32" @click="openLogs()" />
+      </el-col>
+      <el-col :span="12" style="font-size: 200%; color: #bbb; text-align: center;">
+        Device Kontrol
+      </el-col>
+      <el-col :span="6" style="text-align: right;">
+        <el-button round size="mini" style="margin-right: 10px;" @click="updateDevices()"><i class="fas fa-sync-alt"></i> Refresh</el-button>
+      </el-col>
+    </el-row>
+      
+    <el-divider content-position="center">Select Video Device</el-divider>
 
+    <device v-for="device in devices" :key="device.deviceId" :device="device"></device>
 
-<el-row style="padding-top: 10px;">
-  <el-col :span="6" style="font-size: 100%; color: #bbb; padding-left: 10px;">
-    <img src="~@/assets/bug.png" height="32" @click="openLogs()" />
-  </el-col>
-  <el-col :span="12" style="font-size: 200%; color: #bbb; text-align: center;">
-    Device Kontrol
-  </el-col>
-  <el-col :span="6" style="text-align: right;">
-    <el-button round size="mini" style="margin-right: 10px;" @click="updateDevices()"><i class="fas fa-sync-alt"></i> Refresh</el-button>
-  </el-col>
-</el-row>
-     
-<el-divider content-position="center">Select Video Device</el-divider>
-
-<device v-for="device in devices" :key="device.deviceId" :device="device"></device>
-
-
-
-<resize-observer @notify="handleResize" />
+    <resize-observer @notify="handleResize" />
   </div>
 </template>
 
 <script>
 const { ipcRenderer } = require('electron')
-
 import Device from './Control/Device.vue'
-
-const axios = require('axios')
 import { Notification } from 'element-ui'
-
 var compareVersions = require('compare-versions')
 
   export default {
@@ -54,26 +45,12 @@ var compareVersions = require('compare-versions')
     },
 
     mounted: function(){
-      let vm = this
       this.$nextTick(function () {
         let h = document.getElementById('wrapper').clientHeight
         let w = document.getElementById('wrapper').clientWidth
         ipcRenderer.send('controlResize', w, h)
       })
       this.updateDevices()
-    },
-    watch: {
-      config: {
-        handler: function (val, oldVal) { 
-          if (this.sync) {
-            ipcRenderer.send('config', val)
-          }
-          if (val.windowed) {
-            this.config.fullsize = true
-          }
-         },
-        deep: true
-      },
     },
     methods: {
       handleResize: function({ width, height }) {
@@ -83,7 +60,6 @@ var compareVersions = require('compare-versions')
         ipcRenderer.send('openLogs')
       },
       updateDevices: function() {
-
         navigator.mediaDevices.enumerateDevices().then((devices) => {
           this.devices = devices.filter(device => device.kind === 'videoinput')
           console.log('Update devices... count: ', devices.length)
@@ -101,11 +77,6 @@ var compareVersions = require('compare-versions')
 @font-face {
   font-family: Sansation;
   src: url("~@/assets/Sansation-Regular.ttf");
-}
-.logo {
-  margin-top: 10px;
-  margin-bottom: 0px;
-  font-family: Sansation;
 }
 .green {
   color: #6ab42f;

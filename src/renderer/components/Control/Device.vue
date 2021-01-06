@@ -12,20 +12,11 @@ const { ipcRenderer } = require('electron')
   export default {
     props: {
       device: InputDeviceInfo
-    },
-    data: function() {
-      return {
-        screens: []
-      }
-    },
+    },,
     methods: {
       controlDevice: function() { 
         ipcRenderer.send('controlDevice', this.device.label)
       }
-    },
-    mounted: function() {
-      let vm = this
-      
     }
   }
 </script>

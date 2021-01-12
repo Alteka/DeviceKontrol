@@ -116,7 +116,6 @@ setTimeout(function() {
 // Make a request for a user with a given ID
 axios.get('https://api.github.com/repos/alteka/devicekontrol/releases/latest')
   .then(function (response) {
-    log.debug(response.data.tag_name)
     let status = compareVersions(response.data.tag_name, current, '>')
     if (status == 1) { 
 

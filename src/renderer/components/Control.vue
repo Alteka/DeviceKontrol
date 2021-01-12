@@ -7,10 +7,11 @@
         Device Kontrol
       </el-col>
       <el-col :span="6" style="text-align: right;">
-        <el-button round size="small" style="margin-right: 10px;" @click="updateDevices()"><i class="fas fa-sync-alt"></i></el-button>
+        <el-button round size="small" style="margin-right: 10px;" @click="reload();"><i class="fas fa-sync-alt"></i></el-button>
       </el-col>
     </el-row>
-      
+
+      <div style="font-size: 70%; position: absolute; top: 50px; right: 18px;">v{{ version }}</div>
     <el-divider content-position="center">Select Video Device</el-divider>
 
     <device v-for="device in devices" :key="device.deviceId" :device="device"></device>
@@ -29,7 +30,8 @@ import { Notification } from 'element-ui'
     components: { Device },
     data: function () {
       return {
-        devices: []
+        devices: [],
+        version: require('./../../../package.json').version
       }
     },
     mounted: function(){
@@ -38,7 +40,7 @@ import { Notification } from 'element-ui'
         let w = document.getElementById('wrapper').clientWidth
         ipcRenderer.send('controlResize', w, h)
       })
-      this.updateDevices()
+      this.getDevices()
     },
     methods: {
       handleResize: function({ width, height }) {
@@ -47,9 +49,12 @@ import { Notification } from 'element-ui'
       openLogs: function() {
         ipcRenderer.send('openLogs')
       },
-      updateDevices: function() {
+      reload: function() {
+window.document.location.reload()
+      },
+      getDevices: function() {
         navigator.mediaDevices.enumerateDevices().then((devices) => {
-          this.devices = devices.filter(device => device.kind === 'videoinput')
+          this.devices = devices.filter(device => device.kind === 'videoinput').filter(device => !device.label.includes('Virtual Camera')).filter(device => !device.label.includes('Virtual Camera')).filter(device => !device.label.includes('NewTek NDI Video'))
           console.log('Update devices... count: ', devices.length)
         })  
       }

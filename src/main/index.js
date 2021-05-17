@@ -5,6 +5,10 @@ const log = require('electron-log')
 const { exec } = require('child_process')
 const axios = require('axios')
 var compareVersions = require('compare-versions')
+const Store = require('electron-store')
+const Nucleus = require('nucleus-nodejs')
+
+const store = new Store()
 
 if (process.env.NODE_ENV !== 'development') {
   global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
@@ -50,7 +54,29 @@ function createWindow () {
 
 app.on('ready', function() {
   log.info('Launching Device Kontrol')
-  createWindow()
+
+  if (process.platform == 'darwin') {
+    log.warn('Launching on a mac... No worky')
+    dialog.showMessageBox(null, {
+      type: 'warning',
+      title: 'Sorry!',
+      message: 'At the moment, Device Kontrol can\'t run on a mac.'
+    }).then(function (response) {
+      process.exit()
+    })
+  } else {
+    createWindow()
+  }
+
+  if (!store.has('DeviceKontrolInstallID')) {
+    let newId = UUID()
+    log.info('First Runtime and created Install ID: ' + newId)
+    store.set('DeviceKontrolInstallID', newId)
+  }
+  Nucleus.setUserId(store.get('DeviceKontrolInstallID'))
+  log.info('Install ID: ' + store.get('DeviceKontrolInstallID'))
+  Nucleus.init('60a2b8c512dcc16edceb797a', { disableInDev: false })
+  Nucleus.appStarted()
 })
 
 app.on('activate', () => {
@@ -70,6 +96,7 @@ ipcMain.on('controlResize', (event, w, h) => {
 ipcMain.on('openLogs', (event, w, h) => {
   const path = log.transports.file.findLogPath()
   shell.showItemInFolder(path)
+  Nucleus.track('Open Logs')
 })
 
 
@@ -80,6 +107,7 @@ var child = null
 
 ipcMain.on('controlDevice', (event, device) => {
   log.info('Control Device: ', device)
+  Nucleus.track('Launch FFMPEG Window')
 
   var pathToFfmpeg = '"' + require('ffmpeg-static').replace('app.asar', 'app.asar.unpacked') + '"'
   var cmd = pathToFfmpeg + ' -hide_banner -f dshow -show_video_device_dialog true -i video="' + device + '"'
@@ -149,3 +177,10 @@ axios.get('https://api.github.com/repos/alteka/devicekontrol/releases/latest')
     console.log(error);
   })
 }, 3000)
+
+function UUID() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  })
+}

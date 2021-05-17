@@ -1,6 +1,6 @@
 {
   "name": "devicekontrol",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "author": "Alteka Solutions <info@alteka.solutions>",
   "description": "simple utility for opening webcam settings on windows",
   "license": "GPL-3.0-only",
@@ -51,6 +51,7 @@
     "element-ui": "^2.14.1",
     "ffmpeg-static": "^4.2.7",
     "image-size": "^0.9.3",
+    "nucleus-nodejs": "^3.0.8",
     "say": "^0.16.0",
     "vue": "^2.6.12",
     "vue-electron": "^1.0.6",

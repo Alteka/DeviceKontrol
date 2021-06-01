@@ -16,6 +16,10 @@
 
     <device v-for="device in devices" :key="device.deviceId" :device="device"></device>
 
+    <el-row v-if="devices.length == 0" style="text-align: center;">
+      <el-tag type="info">No Matching Devices Found</el-tag>
+    </el-row>
+
     <resize-observer @notify="handleResize" />
   </div>
 </template>
@@ -54,7 +58,7 @@ window.document.location.reload()
       },
       getDevices: function() {
         navigator.mediaDevices.enumerateDevices().then((devices) => {
-          this.devices = devices.filter(device => device.kind === 'videoinput').filter(device => !device.label.includes('Virtual Camera')).filter(device => !device.label.includes('Virtual Camera')).filter(device => !device.label.includes('NewTek NDI Video'))
+          this.devices = devices.filter(device => device.kind === 'videoinput').filter(device => !device.label.includes('Virtual Camera')).filter(device => !device.label.includes('Virtual Camera')).filter(device => !device.label.includes('NewTek NDI Video')).filter(device => !device.label.includes('vMix'))
           console.log('Update devices... count: ', devices.length)
         })  
       }

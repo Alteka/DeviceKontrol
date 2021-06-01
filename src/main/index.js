@@ -167,7 +167,6 @@ axios.get('https://api.github.com/repos/alteka/devicekontrol/releases/latest')
         }
       });
     } else if (status == 0) {
-      // running current/latest version.
       log.info('Running latest version')
     } else if (status == -1) {
       log.info('Running version newer than release')

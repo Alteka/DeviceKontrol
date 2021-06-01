@@ -54,7 +54,7 @@ import { Notification } from 'element-ui'
         ipcRenderer.send('openLogs')
       },
       reload: function() {
-window.document.location.reload()
+        window.document.location.reload()
       },
       getDevices: function() {
         navigator.mediaDevices.enumerateDevices().then((devices) => {

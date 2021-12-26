@@ -24,11 +24,23 @@ export default {
 
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: Sansation, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+body {
+  font-family: Sansation, Helvetica, sans-serif;
+  overflow: hidden !important;
+}
+@font-face {
+  font-family: Sansation;
+  src: url("~@/assets/Sansation-Regular.ttf");
+}
+.green {
+  color: #6ab42f;
+  margin-right: 5px;
 }
 </style>

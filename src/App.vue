@@ -6,7 +6,7 @@
       <code v-text="'<el-button>'"></code>
       below
     </p>
-    <el-button type="primary">el-button</el-button>
+    <el-button type="primary"><i class="fas fa-sync-alt"></i> el-button</el-button>
   </div>
   <HelloWorld msg="Welcome to Your Vue.js App"/>
 </template>

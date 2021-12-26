@@ -1,3 +1,5 @@
+console.log('Preload.js Loaded')
+
 import { contextBridge, ipcRenderer } from 'electron'
 
 // Expose protected methods that allow the renderer process to use
@@ -5,10 +7,10 @@ import { contextBridge, ipcRenderer } from 'electron'
 contextBridge.exposeInMainWorld('ipcRenderer', {
   send: (channel, data) => {
     // whitelist channels
-    let validChannels = ['toMain']
-    if (validChannels.includes(channel)) {
+    // let validChannels = ['toMain']
+    // if (validChannels.includes(channel)) {
       ipcRenderer.send(channel, data)
-    }
+    // }
   },
   receive: (channel, func) => {
     let validChannels = ['fromMain']

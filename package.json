@@ -22,7 +22,8 @@
     "@fortawesome/fontawesome-free": "^5.15.4",
     "core-js": "^3.6.5",
     "element-plus": "^1.0.2-beta.28",
-    "vue": "^3.0.0"
+    "vue": "^3.0.0",
+    "vue3-resize": "^0.2.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

@@ -1,24 +1,66 @@
 <template>
-  <img src="./assets/logo.png">
-  <div>
-    <p>
-      If Element Plus is successfully added to this project, you'll see an
-      <code v-text="'<el-button>'"></code>
-      below
-    </p>
-    <el-button type="primary"><i class="fas fa-sync-alt"></i> el-button</el-button>
-  </div>
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <el-row style="padding-top: 10px;">
+      <el-col :span="18" style="font-size: 36px; padding-left: 10px;">
+        <img src="~@/assets/bug.png" height="26" @click="openLogs()" />
+        Device Kontrol
+      </el-col>
+      <el-col :span="6" style="text-align: right;">
+        <el-button round size="small" style="margin-right: 10px;" @click="reload();"><i class="fas fa-sync-alt"></i></el-button>
+      </el-col>
+    </el-row>
+
+      <div style="font-size: 70%; position: absolute; top: 50px; right: 18px;">v{{ version }}</div>
+    <el-divider content-position="center">Select Video Device</el-divider>
+
+    <!-- <device v-for="device in devices" :key="device.deviceId" :device="device"></device> -->
+
+    <el-row v-if="devices.length == 0" style="text-align: center;">
+      <el-tag type="info">No Matching Devices Found</el-tag>
+    </el-row>
+
+    <resize-observer @notify="handleResize" />
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+// const { ipcRenderer } = require('electron')
+// import Device from './components/Device.vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
-  }
+    // Device
+  },
+  data: function () {
+      return {
+        devices: [],
+        version: require('./../package.json').version
+      }
+    },
+    mounted: function(){
+      this.$nextTick(function () {
+        let h = document.getElementById('app').clientHeight
+        let w = document.getElementById('app').clientWidth
+        window.ipcRenderer.send('controlResize', w, h)
+      })
+      this.getDevices()
+    },
+    methods: {
+      handleResize: function({ width, height }) {
+        window.ipcRenderer.send('controlResize', width, height)
+      },
+      openLogs: function() {
+        window.ipcRenderer.send('openLogs')
+      },
+      reload: function() {
+        window.document.location.reload()
+      },
+      getDevices: function() {
+        navigator.mediaDevices.enumerateDevices().then((devices) => {
+          this.devices = devices.filter(device => device.kind === 'videoinput').filter(device => !device.label.includes('Virtual Camera')).filter(device => !device.label.includes('Virtual Camera')).filter(device => !device.label.includes('NewTek NDI Video')).filter(device => !device.label.includes('vMix'))
+          console.log('Update devices... count: ', devices.length)
+        })  
+      }
+    }
 }
 </script>
 

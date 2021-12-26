@@ -12,7 +12,7 @@
       <div style="font-size: 70%; position: absolute; top: 50px; right: 18px;">v{{ version }}</div>
     <el-divider content-position="center">Select Video Device</el-divider>
 
-    <!-- <device v-for="device in devices" :key="device.deviceId" :device="device"></device> -->
+    <device v-for="device in devices" :key="device.deviceId" :device="device"></device>
 
     <el-row v-if="devices.length == 0" style="text-align: center;">
       <el-tag type="info">No Matching Devices Found</el-tag>
@@ -22,13 +22,12 @@
 </template>
 
 <script>
-// const { ipcRenderer } = require('electron')
-// import Device from './components/Device.vue'
+import Device from './components/Device.vue'
 
 export default {
   name: 'App',
   components: {
-    // Device
+    Device
   },
   data: function () {
       return {

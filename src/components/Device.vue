@@ -8,10 +8,9 @@
 </template>
 
 <script>
-// const { ipcRenderer } = require('electron')
   export default {
     props: {
-      device: InputDeviceInfo
+      device: Object
     },
     computed: {
       label: function() {
@@ -20,7 +19,7 @@
     },
     methods: {
       controlDevice: function() { 
-        ipcRenderer.send('controlDevice', this.label)
+        window.ipcRenderer.send('controlDevice', this.label)
       }
     }
   }

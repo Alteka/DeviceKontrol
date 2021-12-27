@@ -1,5 +1,5 @@
 <template>
-  <el-row style="text-align: center; margin-bottom: 10px;"> 
+  <el-row justify="center" style="margin-bottom: 10px;"> 
     <el-button type="primary" round @click="controlDevice()">
       <i class="fas fa-video" v-if="device.kind == 'videoinput'"> </i>
     {{ label }}

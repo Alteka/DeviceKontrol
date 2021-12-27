@@ -39,13 +39,15 @@ export default {
       this.$nextTick(function () {
         let h = document.getElementById('app').clientHeight
         let w = document.getElementById('app').clientWidth
-        window.ipcRenderer.send('controlResize', w, h)
+        window.ipcRenderer.send('controlResize', {width: w, height: h})
       })
       this.getDevices()
     },
     methods: {
-      handleResize: function({ width, height }) {
-        window.ipcRenderer.send('controlResize', width, height)
+      handleResize: function() {
+        let h = document.getElementById('app').clientHeight
+        let w = document.getElementById('app').clientWidth
+        window.ipcRenderer.send('controlResize', {width: w, height: h})
       },
       openLogs: function() {
         window.ipcRenderer.send('openLogs')
@@ -70,11 +72,11 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
 body {
   font-family: Sansation, Helvetica, sans-serif;
   overflow: hidden !important;
+  margin: 0;
 }
 @font-face {
   font-family: Sansation;

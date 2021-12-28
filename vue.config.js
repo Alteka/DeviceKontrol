@@ -5,18 +5,12 @@ module.exports = {
         builderOptions: { 
           "productName": "DeviceKontrol",
           "appId": "solutions.alteka.devicekontrol",
-          "directories": {
-            "output": "build"
-          },
-          "files": [
-            "dist/electron/**/*"
-          ],
           "mac": {
-            "icon": "build/icons/icon.png",
+            "icon": "public/icon.png",
             "target": "pkg"
           },
           "win": {
-            "icon": "build/icons/icon.png"
+            "icon": "public/icon.png"
           },
           "nsis": {
             "oneClick": false,

@@ -37,6 +37,7 @@ async function createWindow() {
     height: 450,
     useContentSize: true,
     maximizable: false,
+    resizable: false,
     webPreferences: {
       
       // Use pluginOptions.nodeIntegration, leave this alone
@@ -47,11 +48,11 @@ async function createWindow() {
     }
   })
 
-  // if (process.platform == 'darwin') {
-  //   Menu.setApplicationMenu(menu)
-  // } else {
-  //   Menu.setApplicationMenu(null)
-  // }
+  if (process.platform == 'darwin') {
+    Menu.setApplicationMenu(menu)
+  } else {
+    Menu.setApplicationMenu(null)
+  }
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
@@ -134,10 +135,7 @@ if (isDevelopment) {
 //       IPC Handlers     //
 //========================//
 ipcMain.on('controlResize', (event, data) => {
-  // turning resizable on and off again seems to make it respect the useContentSize properly. This is a bug in electron. 
-  controlWindow.resizable = true
   controlWindow.setContentSize(460, data.height + 20)
-  controlWindow.resizable = false
 })
 
 ipcMain.on('openLogs', (event) => {

@@ -5,6 +5,8 @@ import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 import compareVersions from 'compare-versions'
 import { v4 as uuidv4 } from 'uuid'
+import Analytics from 'analytics'
+import googleAnalytics from '@analytics/google-analytics'
 const log = require('electron-log')
 const { exec } = require('child_process')
 const axios = require('axios')
@@ -123,16 +125,36 @@ async function createWindow() {
 //=====================//
 //       Analytics     //
 //=====================//
+const analytics = Analytics({
+  app: 'DeviceKontrol',
+  version: 100,
+  plugins: [
+    googleAnalytics({
+      trackingId: 'UA-183734846-3',
+      tasks: {
+        // Set checkProtocolTask for electron apps & chrome extensions
+        checkProtocolTask: null,
+      }
+    })
+  ]
+})
 app.on('ready', async () => {
-if (!store.has('DeviceKontrolInstallID')) {
-  let newId = uuidv4()
-  log.info('First Runtime and created Install ID: ' + newId)
-  store.set('DeviceKontrolInstallID', newId)
-}
-// Nucleus.setUserId(store.get('DeviceKontrolInstallID'))
-log.info('Install ID: ' + store.get('DeviceKontrolInstallID'))
-// Nucleus.init('60a2b8c512dcc16edceb797a', { disableInDev: false })
-// Nucleus.appStarted()
+  if (!store.has('DeviceKontrolInstallID')) {
+    let newId = uuidv4()
+    log.info('First Runtime and created Install ID: ' + newId)
+    store.set('DeviceKontrolInstallID', newId)
+  } else {
+    log.info('Install ID: ' + store.get('DeviceKontrolInstallID'))
+  }
+
+  analytics.identify(store.get('DeviceKontrolInstallID'), {
+    firstName: 'Version',
+    lastName: require('./../package.json').version
+  }, () => {
+    console.log('do this after identify')
+  })
+
+  analytics.track('AppLaunched')
 })
 
 
@@ -147,7 +169,7 @@ ipcMain.on('controlResize', (_, data) => {
 ipcMain.on('openLogs', () => {
   const path = log.transports.file.findLogPath()
   shell.showItemInFolder(path)
-  // Nucleus.track('Open Logs')
+  analytics.track('Open Logs')
 })
 
 
@@ -159,7 +181,7 @@ var child = null
 
 ipcMain.on('controlDevice', (_, device) => {
   log.info('Control Device: ', device)
-  // Nucleus.track('Launch FFMPEG Window')
+  analytics.track('Launch FFMPEG')
 
   var cmd = path.join(__static, 'ffmpeg/ffmpeg.exe') + ' -hide_banner -f dshow -show_video_device_dialog true -i video="' + device + '"'
 
@@ -202,6 +224,7 @@ axios.get('https://api.github.com/repos/alteka/devicekontrol/releases/latest')
       }).then(function (response) {
         if (response.response == 1) {
           shell.openExternal('https://alteka.solutions/device-kontrol')
+          analytics.track("Open Update Link")
         }
       });
     } else if (status == 0) {

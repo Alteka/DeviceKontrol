@@ -19,7 +19,9 @@
     "postuninstall": "electron-builder install-app-deps"
   },
   "dependencies": {
+    "@analytics/google-analytics": "^0.5.3",
     "@fortawesome/fontawesome-free": "^5.15.4",
+    "analytics": "^0.7.19",
     "axios": "^0.24.0",
     "compare-versions": "^4.1.2",
     "core-js": "^3.6.5",

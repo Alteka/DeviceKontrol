@@ -3,7 +3,8 @@
 import { app, protocol, BrowserWindow, Menu, ipcMain, dialog, shell } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
-import compareVersions from 'compare-versions';
+import compareVersions from 'compare-versions'
+import { v4 as uuidv4 } from 'uuid'
 const log = require('electron-log')
 const { exec } = require('child_process')
 const axios = require('axios')
@@ -15,7 +16,10 @@ const store = new Store()
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
-// Scheme must be registered before the app is ready
+
+//======================================//
+//      BOILER PLATE ELECTRON STUFF     //
+//======================================//
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } }
 ])
@@ -27,76 +31,25 @@ process.on('uncaughtException', function (error) {
   log.warn('Error: ', error)
 })
 
-
-let controlWindow
-
-async function createWindow() {
-  log.info('Showing control window')
-  controlWindow = new BrowserWindow({
-    width: 460,
-    height: 450,
-    useContentSize: true,
-    maximizable: false,
-    resizable: false,
-    webPreferences: {
-      
-      // Use pluginOptions.nodeIntegration, leave this alone
-      // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
-      nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
-      contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
-      preload: path.join(__dirname, 'preload.js')
-    }
-  })
-
-  if (process.platform == 'darwin') {
-    Menu.setApplicationMenu(menu)
-  } else {
-    Menu.setApplicationMenu(null)
-  }
-
-  if (process.env.WEBPACK_DEV_SERVER_URL) {
-    // Load the url of the dev server if in development mode
-    await controlWindow.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
-    if (!process.env.IS_TEST) controlWindow.webContents.openDevTools()
-  } else {
-    createProtocol('app')
-    // Load the index.html when not in development
-    controlWindow.loadURL('app://./index.html')
-  }
-  
-}
-
-
-
-// Quit when all windows are closed.
 app.on('window-all-closed', () => {
-  // On macOS it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== 'darwin') {
     app.quit()
   }
 })
 
 app.on('activate', () => {
-  // On macOS it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) createWindow()
 })
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
 app.on('ready', async () => {
   if (isDevelopment && !process.env.IS_TEST) {
-    // Install Vue Devtools
     try {
       await installExtension(VUEJS3_DEVTOOLS)
     } catch (e) {
       console.error('Vue Devtools failed to install:', e.toString())
     }
   }
-
-  if (process.platform == 'darwin' && !isDevelopment) {
+  if (process.platform == 'darwin') {
     log.warn('Launching on a mac... No worky')
     dialog.showMessageBox(null, {
       type: 'warning',
@@ -108,21 +61,8 @@ app.on('ready', async () => {
   } else {
     createWindow()
   }
-
-  // DO ANALYTICS STUFF HERE!!
-  if (!store.has('DeviceKontrolInstallID')) {
-    let newId = UUID()
-    log.info('First Runtime and created Install ID: ' + newId)
-    store.set('DeviceKontrolInstallID', newId)
-  }
-  // Nucleus.setUserId(store.get('DeviceKontrolInstallID'))
-  log.info('Install ID: ' + store.get('DeviceKontrolInstallID'))
-  // Nucleus.init('60a2b8c512dcc16edceb797a', { disableInDev: false })
-  // Nucleus.appStarted()
-
 })
 
-// Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {
   if (process.platform === 'win32') {
     process.on('message', (data) => {
@@ -137,6 +77,63 @@ if (isDevelopment) {
   }
 }
 
+
+
+//==========================//
+//       WINDOW HANDLER     //
+//==========================//
+let controlWindow
+async function createWindow() {
+  log.info('Showing control window')
+  controlWindow = new BrowserWindow({
+    width: 460,
+    height: 450,
+    show: false,
+    useContentSize: true,
+    maximizable: false,
+    resizable: false,
+    webPreferences: {
+      nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
+      contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
+      preload: path.join(__dirname, 'preload.js')
+    }
+  })
+
+  controlWindow.once('ready-to-show', () => {
+    controlWindow.show()
+  })
+
+  if (process.platform == 'darwin') {
+    Menu.setApplicationMenu(menu)
+  } else {
+    Menu.setApplicationMenu(null)
+  }
+
+  if (process.env.WEBPACK_DEV_SERVER_URL) {
+    await controlWindow.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
+    if (!process.env.IS_TEST) controlWindow.webContents.openDevTools()
+  } else {
+    createProtocol('app')
+    controlWindow.loadURL('app://./index.html')
+  }
+}
+
+
+
+//=====================//
+//       Analytics     //
+//=====================//
+app.on('ready', async () => {
+if (!store.has('DeviceKontrolInstallID')) {
+  let newId = uuidv4()
+  log.info('First Runtime and created Install ID: ' + newId)
+  store.set('DeviceKontrolInstallID', newId)
+}
+// Nucleus.setUserId(store.get('DeviceKontrolInstallID'))
+log.info('Install ID: ' + store.get('DeviceKontrolInstallID'))
+// Nucleus.init('60a2b8c512dcc16edceb797a', { disableInDev: false })
+// Nucleus.appStarted()
+})
 
 
 
@@ -189,26 +186,14 @@ ipcMain.on('controlDevice', (_, device) => {
 })
 
 
-
-
+//========================//
+//     Update Checker     //
+//========================//
 setTimeout(function() {
-  let current = require('./../package.json').version
-
-// Make a request for a user with a given ID
 axios.get('https://api.github.com/repos/alteka/devicekontrol/releases/latest')
   .then(function (response) {
-    let status = compareVersions(response.data.tag_name, current, '>')
+    let status = compareVersions(response.data.tag_name, require('./../package.json').version, '>')
     if (status == 1) { 
-
-      let link = ''
-      for (const asset in response.data.assets) {
-        if (process.platform == 'darwin' && response.data.assets[asset].name.includes('.pkg')) {
-          link = response.data.assets[asset].browser_download_url
-        }
-        if (process.platform != 'darwin' && response.data.assets[asset].name.includes('.exe')) {
-          link = response.data.assets[asset].browser_download_url
-        }
-      }
       dialog.showMessageBox(controlWindow, {
         type: 'question',
         title: 'An Update Is Available',
@@ -216,7 +201,7 @@ axios.get('https://api.github.com/repos/alteka/devicekontrol/releases/latest')
         buttons: ['Cancel', 'Yes']
       }).then(function (response) {
         if (response.response == 1) {
-          shell.openExternal(link)
+          shell.openExternal('https://alteka.solutions/device-kontrol')
         }
       });
     } else if (status == 0) {
@@ -228,11 +213,4 @@ axios.get('https://api.github.com/repos/alteka/devicekontrol/releases/latest')
   .catch(function (error) {
     console.log(error);
   })
-}, 3000)
-
-function UUID() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  })
-}
+}, 10000)

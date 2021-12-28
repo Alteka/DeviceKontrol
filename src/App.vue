@@ -1,6 +1,6 @@
 <template>
   <el-row style="padding-top: 10px;">
-      <el-col :span="18" style="font-size: 36px; padding-left: 10px;">
+      <el-col :span="18" style="text-align: left; font-size: 36px; padding-left: 10px;">
         <img src="~@/assets/bug.png" height="26" @click="openLogs()" />
         Device Kontrol
       </el-col>
@@ -14,7 +14,7 @@
 
     <device v-for="device in devices" :key="device.deviceId" :device="device"></device>
 
-    <el-row v-if="devices.length == 0" style="text-align: center;">
+    <el-row v-if="devices.length == 0" justify="center">
       <el-tag type="info">No Matching Devices Found</el-tag>
     </el-row>
 

@@ -35,9 +35,8 @@ async function createWindow() {
   controlWindow = new BrowserWindow({
     width: 460,
     height: 450,
-    resizable: false,
-    maximizable: false,
     useContentSize: true,
+    maximizable: false,
     webPreferences: {
       
       // Use pluginOptions.nodeIntegration, leave this alone
@@ -63,6 +62,7 @@ async function createWindow() {
     // Load the index.html when not in development
     controlWindow.loadURL('app://./index.html')
   }
+  
 }
 
 
@@ -134,7 +134,10 @@ if (isDevelopment) {
 //       IPC Handlers     //
 //========================//
 ipcMain.on('controlResize', (event, data) => {
+  // turning resizable on and off again seems to make it respect the useContentSize properly. This is a bug in electron. 
+  controlWindow.resizable = true
   controlWindow.setContentSize(460, data.height + 20)
+  controlWindow.resizable = false
 })
 
 ipcMain.on('openLogs', (event) => {
@@ -152,9 +155,12 @@ var child = null
 
 ipcMain.on('controlDevice', (event, device) => {
   log.info('Control Device: ', device)
-  Nucleus.track('Launch FFMPEG Window')
+  // Nucleus.track('Launch FFMPEG Window')
 
-  var pathToFfmpeg = '"' + require('ffmpeg-static').replace('app.asar', 'app.asar.unpacked') + '"'
+  let ffmpeg = require('ffmpeg-static')
+  log.debug(ffmpeg)
+
+  var pathToFfmpeg = '"' + ffmpeg.replace('app.asar', 'app.asar.unpacked') + '"'
   var cmd = pathToFfmpeg + ' -hide_banner -f dshow -show_video_device_dialog true -i video="' + device + '"'
 
   log.info('Executing ffmpeg: ' + cmd)

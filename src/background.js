@@ -3,10 +3,10 @@
 import { app, protocol, BrowserWindow, Menu, ipcMain, dialog, shell } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
+import compareVersions from 'compare-versions';
 const log = require('electron-log')
 const { exec } = require('child_process')
 const axios = require('axios')
-var compareVersions = require('compare-versions')
 const Store = require('electron-store')
 const path = require('path')
 const menu = require('./menu.js').menu
@@ -164,11 +164,7 @@ ipcMain.on('controlDevice', (_, device) => {
   log.info('Control Device: ', device)
   // Nucleus.track('Launch FFMPEG Window')
 
-  let ffmpeg = require('ffmpeg-static')
-  log.debug(ffmpeg)
-
-  var pathToFfmpeg = '"' + ffmpeg.replace('app.asar', 'app.asar.unpacked') + '"'
-  var cmd = pathToFfmpeg + ' -hide_banner -f dshow -show_video_device_dialog true -i video="' + device + '"'
+  var cmd = path.join(__static, 'ffmpeg/ffmpeg.exe') + ' -hide_banner -f dshow -show_video_device_dialog true -i video="' + device + '"'
 
   log.info('Executing ffmpeg: ' + cmd)
 
@@ -190,7 +186,6 @@ ipcMain.on('controlDevice', (_, device) => {
       return
     }
   })
-  
 })
 
 

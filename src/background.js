@@ -102,7 +102,7 @@ app.on('ready', async () => {
       type: 'warning',
       title: 'Sorry!',
       message: 'At the moment, Device Kontrol can\'t run on a mac.'
-    }).then(function (response) {
+    }).then(function () {
       process.exit()
     })
   } else {
@@ -110,6 +110,15 @@ app.on('ready', async () => {
   }
 
   // DO ANALYTICS STUFF HERE!!
+  if (!store.has('DeviceKontrolInstallID')) {
+    let newId = UUID()
+    log.info('First Runtime and created Install ID: ' + newId)
+    store.set('DeviceKontrolInstallID', newId)
+  }
+  // Nucleus.setUserId(store.get('DeviceKontrolInstallID'))
+  log.info('Install ID: ' + store.get('DeviceKontrolInstallID'))
+  // Nucleus.init('60a2b8c512dcc16edceb797a', { disableInDev: false })
+  // Nucleus.appStarted()
 
 })
 
@@ -134,14 +143,14 @@ if (isDevelopment) {
 //========================//
 //       IPC Handlers     //
 //========================//
-ipcMain.on('controlResize', (event, data) => {
+ipcMain.on('controlResize', (_, data) => {
   controlWindow.setContentSize(460, data.height + 20)
 })
 
-ipcMain.on('openLogs', (event) => {
+ipcMain.on('openLogs', () => {
   const path = log.transports.file.findLogPath()
   shell.showItemInFolder(path)
-  Nucleus.track('Open Logs')
+  // Nucleus.track('Open Logs')
 })
 
 
@@ -151,7 +160,7 @@ ipcMain.on('openLogs', (event) => {
 //========================//
 var child = null
 
-ipcMain.on('controlDevice', (event, device) => {
+ipcMain.on('controlDevice', (_, device) => {
   log.info('Control Device: ', device)
   // Nucleus.track('Launch FFMPEG Window')
 
@@ -168,7 +177,7 @@ ipcMain.on('controlDevice', (event, device) => {
     log.verbose('killing old process')
   }
 
-  child = exec(cmd, (error, stdout, stderr) => {
+  child = exec(cmd, (error) => {
     if (error) {
       log.error(error)
       if (error.message.includes('requested filter does not have a property page')) {
@@ -187,41 +196,48 @@ ipcMain.on('controlDevice', (event, device) => {
 
 
 
-// setTimeout(function() {
-//   let current = require('./../package.json').version
+setTimeout(function() {
+  let current = require('./../package.json').version
 
-// // Make a request for a user with a given ID
-// axios.get('https://api.github.com/repos/alteka/devicekontrol/releases/latest')
-//   .then(function (response) {
-//     let status = compareVersions(response.data.tag_name, current, '>')
-//     if (status == 1) { 
+// Make a request for a user with a given ID
+axios.get('https://api.github.com/repos/alteka/devicekontrol/releases/latest')
+  .then(function (response) {
+    let status = compareVersions(response.data.tag_name, current, '>')
+    if (status == 1) { 
 
-//       let link = ''
-//       for (const asset in response.data.assets) {
-//         if (process.platform == 'darwin' && response.data.assets[asset].name.includes('.pkg')) {
-//           link = response.data.assets[asset].browser_download_url
-//         }
-//         if (process.platform != 'darwin' && response.data.assets[asset].name.includes('.exe')) {
-//           link = response.data.assets[asset].browser_download_url
-//         }
-//       }
-//       dialog.showMessageBox(controlWindow, {
-//         type: 'question',
-//         title: 'An Update Is Available',
-//         message: 'Would you like to download version: ' + response.data.tag_name,
-//         buttons: ['Cancel', 'Yes']
-//       }).then(function (response) {
-//         if (response.response == 1) {
-//           shell.openExternal(link)
-//         }
-//       });
-//     } else if (status == 0) {
-//       log.info('Running latest version')
-//     } else if (status == -1) {
-//       log.info('Running version newer than release')
-//     }
-//   })
-//   .catch(function (error) {
-//     console.log(error);
-//   })
-// }, 3000)
+      let link = ''
+      for (const asset in response.data.assets) {
+        if (process.platform == 'darwin' && response.data.assets[asset].name.includes('.pkg')) {
+          link = response.data.assets[asset].browser_download_url
+        }
+        if (process.platform != 'darwin' && response.data.assets[asset].name.includes('.exe')) {
+          link = response.data.assets[asset].browser_download_url
+        }
+      }
+      dialog.showMessageBox(controlWindow, {
+        type: 'question',
+        title: 'An Update Is Available',
+        message: 'Would you like to download version: ' + response.data.tag_name,
+        buttons: ['Cancel', 'Yes']
+      }).then(function (response) {
+        if (response.response == 1) {
+          shell.openExternal(link)
+        }
+      });
+    } else if (status == 0) {
+      log.info('Running latest version')
+    } else if (status == -1) {
+      log.info('Running version newer than release')
+    }
+  })
+  .catch(function (error) {
+    console.log(error);
+  })
+}, 3000)
+
+function UUID() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  })
+}
